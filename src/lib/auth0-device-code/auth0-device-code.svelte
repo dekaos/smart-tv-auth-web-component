@@ -256,16 +256,15 @@
     }
 
     p {
-      font-family: 'Bungee Outline', cursive;
+      font-family: 'Roboto' sans-serif !important;
       font-size: 28px;
       text-align: center;
     }
 
     .result {
       margin: auto;
-
       p {
-        font-family: sans-serif;
+        font-family: 'Roboto' sans-serif !important;
         margin: 0;
         padding: 2px 0;
         font-size: 26px;
@@ -290,7 +289,7 @@
     align-items: center;
 
     h2 {
-      font-family: sans-serif;
+      font-family: 'Roboto' sans-serif;
     }
 
     .inner {
@@ -319,7 +318,7 @@
     align-items: center;
 
     h4 {
-      font-family: sans-serif;
+      font-family: 'Roboto' sans-serif;
     }
 
     img {
