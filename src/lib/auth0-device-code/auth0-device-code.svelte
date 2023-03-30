@@ -1,6 +1,7 @@
 <svelte:options tag="auth0-device-code" />
 <script lang="ts">
   import { onMount, tick } from 'svelte';
+  import qrcode from 'qrcode-generator';
   import store from 'store';
   
   interface Image {
@@ -108,7 +109,7 @@
           store.remove('access_token');
           hasAccessToken = false;
           attemps = 0;
-          await requestDeviceCode()
+          await requestDeviceCode();
         }
         return;
       }
@@ -123,26 +124,25 @@
     try {
       loading = true;
       const response = await fetch(VITE_REQUEST_AUTH0_CODE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
 
       const data = await response.json();
 
       loading = false;
       auth0Data = data;
       const { device_code, interval } = auth0Data;
- 
+      const errorCorrectionLevel = 'L';
+      const typeNumber = 0;
+      const qr = qrcode(typeNumber, errorCorrectionLevel);
+      
+      qr.addData(auth0Data?.verification_uri_complete);
+      qr.make();
+
       await tick();
       
-      // @ts-ignore
-      new QRCode(document.querySelector('#qr-code'), {
-        text: auth0Data?.verification_uri_complete,
-        width: 300,
-        height: 300,
-        colorDark: '#000000',
-        colorLight: '#ffffff',
-      });
+      document.getElementById('qr-code')!.innerHTML = qr.createImgTag(8);
   
       fetchInterval = setInterval(async () => {        
         try {
@@ -181,8 +181,8 @@
       console.error(error);
     }
   }
-
-  const init = async () => {
+  
+  onMount(async () => {
     const accessToken = store.get('access_token');
     
     if (!accessToken) {
@@ -193,22 +193,6 @@
     hasAccessToken = true;
     await getUserInfo();
     await getSampleImages();
-  }
-  
-  onMount(async () => {
-    const qrCodeTagId = document.getElementById('qr-code-tag');
-
-    if (!qrCodeTagId) {
-      const qrCodeTag = document.createElement('script');
-      qrCodeTag.id = 'qr-code-tag';
-      qrCodeTag.onload = async () => {
-        await init();
-      };
-      qrCodeTag.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-      document.head.appendChild(qrCodeTag);
-    } else {
-      await init();
-    }
   })
 </script>
 <div class="container">
@@ -246,7 +230,7 @@
         <p>Agora acesse a URL abaixo no seu celular ou computador:</p>
         <p>{auth0Data?.verification_uri}</p>
         <p>E digite o código <b>{auth0Data?.user_code}</b><br /><br /></p>
-        <p><b>Ou use o QR code abaixo</b></p><br />
+        <p><b>Ou use o QR code abaixo</b></p>
         <div id="qr-code"></div>
       </div>
     {/if}
@@ -324,9 +308,6 @@
   #qr-code {
     margin: 0 auto;
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   .avatar {
