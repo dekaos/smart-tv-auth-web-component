@@ -5,3 +5,9 @@
 <main>
   <Auth0DeviceCode />
 </main>
+
+<style lang="scss">
+  main {
+    padding-bottom: 40px;
+  }
+</style>
