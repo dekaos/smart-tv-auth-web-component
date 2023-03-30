@@ -36,6 +36,7 @@
   let loading = false;
   let hasAccessToken = true;
   let fetchInterval: number | undefined;
+  let qrCodeImage: string;
 
   const {
     VITE_UNSPLASH_PHOTOS_URL,
@@ -142,7 +143,7 @@
 
       await tick();
       
-      document.getElementById('qr-code')!.innerHTML = qr.createImgTag(8);
+      qrCodeImage = qr.createImgTag(8);
   
       fetchInterval = setInterval(async () => {        
         try {
@@ -231,7 +232,9 @@
         <p>{auth0Data?.verification_uri}</p>
         <p>E digite o código <b>{auth0Data?.user_code}</b><br /><br /></p>
         <p><b>Ou use o QR code abaixo</b></p>
-        <div id="qr-code"></div>
+        <div id="qr-code">
+          {@html qrCodeImage}
+        </div>
       </div>
     {/if}
   {/if}
